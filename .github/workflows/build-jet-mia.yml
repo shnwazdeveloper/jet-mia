@@ -54,7 +54,7 @@ jobs:
           cp app/build/app/outputs/flutter-apk/app-release.apk artifacts/jet_mia.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jet_mia_apk
           path: artifacts/jet_mia.apk
@@ -147,7 +147,7 @@ jobs:
           }
 
       - name: Upload Windows build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jet_mia_windows_x64
           path: artifacts/jet_mia_windows_x64.exe
