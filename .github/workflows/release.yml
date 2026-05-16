@@ -331,6 +331,34 @@ jobs:
           name: appimage-x86-64-result
           path: ./*.AppImage
 
+  build_windows_exe_x86_64:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Fix long file paths
+        run: git config --system core.longpaths true
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Compile Windows installer
+        run: .\scripts\compile_windows_exe.ps1
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe-x86-64-result
+          path: artifacts/jet_mia_windows_x64.exe
+
   release:
     needs:
       - build
@@ -340,6 +368,7 @@ jobs:
       - build_deb_x86_64
       - build_deb_arm_64
       - build_appimage_x86_64
+      - build_windows_exe_x86_64
     runs-on: ubuntu-24.04
 
     steps:
@@ -507,3 +536,23 @@ jobs:
           asset_path: result.AppImage
           asset_name: LocalSend-${{ needs.build.outputs.version }}-linux-x86-64.AppImage
           asset_content_type: application/x-appimage
+
+      # WINDOWS EXE (x86_64)
+      - name: Download windows exe file
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-exe-x86-64-result
+          path: windows-exe-x86-64-result
+
+      - name: Copy exe file to root
+        run: cp windows-exe-x86-64-result/*.exe result.exe
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.draft_release.outputs.upload_url }}
+          asset_path: result.exe
+          asset_name: jet_mia_windows_x64.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

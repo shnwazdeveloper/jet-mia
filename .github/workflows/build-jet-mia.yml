@@ -59,3 +59,96 @@ jobs:
           name: jet_mia_apk
           path: artifacts/jet_mia.apk
           if-no-files-found: error
+
+  windows-exe:
+    name: Windows EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Enable long paths
+        run: git config --system core.longpaths true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Rust
+        working-directory: app
+        run: rustup show
+
+      - name: Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build Windows release
+        working-directory: app
+        run: flutter build windows --release
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $releaseDir = (Resolve-Path "app/build/windows/x64/runner/Release").Path
+          $stagingDir = Join-Path $env:RUNNER_TEMP "jet_mia_installer_input"
+          $outputDir = "artifacts"
+
+          if (Test-Path $stagingDir) {
+            Remove-Item -LiteralPath $stagingDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Force -Path $stagingDir | Out-Null
+          New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+
+          if (!(Test-Path "$releaseDir/jet_mia.exe")) {
+            throw "Windows bundle is missing jet_mia.exe"
+          }
+          if (!(Test-Path "$releaseDir/connectivity_plus_plugin.dll")) {
+            throw "Windows bundle is missing connectivity_plus_plugin.dll"
+          }
+
+          Copy-Item "$releaseDir/jet_mia.exe" $stagingDir
+          Copy-Item "$releaseDir/*.dll" $stagingDir
+          Copy-Item "$releaseDir/data" $stagingDir -Recurse
+          Copy-Item "scripts/windows/x64/*.dll" $stagingDir -ErrorAction SilentlyContinue
+          Copy-Item "app/assets/packaging/logo.ico" "$stagingDir/logo.ico"
+
+          $blockedExtensions = @("*.lnk", "*.lib", "*.exp", "*.pdb")
+          foreach ($pattern in $blockedExtensions) {
+            $blockedFiles = Get-ChildItem $stagingDir -Recurse -File -Filter $pattern
+            if ($blockedFiles) {
+              throw "Windows installer input contains unsupported file type: $($blockedFiles[0].FullName)"
+            }
+          }
+
+          $env:JET_MIA_SOURCE_DIR = (Resolve-Path $stagingDir).Path
+          $env:JET_MIA_OUTPUT_DIR = (Resolve-Path $outputDir).Path
+
+          $isccCandidates = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
+          )
+          $iscc = $isccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (!$iscc) {
+            throw "ISCC.exe was not found after installing Inno Setup"
+          }
+
+          & $iscc (Resolve-Path "scripts/compile_windows_exe-inno.iss")
+
+          if (!(Test-Path "artifacts/jet_mia_windows_x64.exe")) {
+            throw "Windows installer was not generated"
+          }
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: jet_mia_windows_x64
+          path: artifacts/jet_mia_windows_x64.exe
+          if-no-files-found: error
