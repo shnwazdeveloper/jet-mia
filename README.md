@@ -1,4 +1,4 @@
-# LocalSend
+# Jet Mia
 
 [![CI status][ci-badge]][ci-workflow]
 [![Translations][translate-badge]][translate-link]
@@ -20,7 +20,7 @@
 [github]: https://github.com/localsend/localsend
 [codeberg]: https://codeberg.org/localsend/localsend
 
-LocalSend is a free, open-source app that allows you to securely share files and messages with nearby devices over your local network without needing an internet connection.
+Jet Mia is a rebranded build based on LocalSend, the free open-source app for securely sharing files and messages with nearby devices over your local network without needing an internet connection.
 
 - [About](#about)
 - [Sponsors](#sponsors)

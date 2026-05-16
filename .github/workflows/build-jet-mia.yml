@@ -1,0 +1,106 @@
+name: Build Jet Mia
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: "3.38.10"
+
+jobs:
+  android-apk:
+    name: Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Rust
+        working-directory: app
+        run: |
+          rustup show
+          rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+
+      - name: Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build release APK
+        working-directory: app
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mkdir -p artifacts
+          cp app/build/app/outputs/flutter-apk/app-release.apk artifacts/jet-mia.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: jet-mia-apk
+          path: artifacts/jet-mia.apk
+          if-no-files-found: error
+
+  windows-exe:
+    name: Windows EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Enable long paths
+        run: git config --system core.longpaths true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Set up Rust
+        working-directory: app
+        run: rustup show
+
+      - name: Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build Windows release
+        working-directory: app
+        run: flutter build windows --release
+
+      - name: Package Windows build
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Copy-Item app/build/windows/x64/runner/Release/jet_mia.exe artifacts/jet_mia.exe
+          Compress-Archive -Path app/build/windows/x64/runner/Release/* -DestinationPath artifacts/jet-mia-windows-x64.zip -Force
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: jet-mia-windows-x64
+          path: |
+            artifacts/jet_mia.exe
+            artifacts/jet-mia-windows-x64.zip
+          if-no-files-found: error

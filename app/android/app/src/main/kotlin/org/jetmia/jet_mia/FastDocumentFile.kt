@@ -1,4 +1,4 @@
-package org.localsend.localsend_app
+package org.jetmia.jet_mia
 
 import android.content.ContentResolver
 import android.content.Context
