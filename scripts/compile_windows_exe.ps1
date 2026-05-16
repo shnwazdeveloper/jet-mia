@@ -9,6 +9,10 @@ New-Item -ItemType Directory -Force -Path "D:\inno"
 Copy-Item -Path "build\windows\x64\runner\Release\*" -Destination "D:\inno" -Recurse
 Copy-Item -Path "assets\packaging\logo.ico" -Destination "D:\inno"
 
+if (!(Test-Path "D:\inno\connectivity_plus_plugin.dll")) {
+  throw "Windows installer staging folder is missing connectivity_plus_plugin.dll"
+}
+
 cd ..
 
 Copy-Item -Path "scripts\windows\x64\*" -Destination "D:\inno" -Recurse

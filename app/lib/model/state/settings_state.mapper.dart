@@ -121,6 +121,13 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     'enableAnimations',
     _$enableAnimations,
   );
+  static bool _$checkForUpdates(SettingsState v) => v.checkForUpdates;
+  static const Field<SettingsState, bool> _f$checkForUpdates = Field(
+    'checkForUpdates',
+    _$checkForUpdates,
+    opt: true,
+    def: true,
+  );
   static DeviceType? _$deviceType(SettingsState v) => v.deviceType;
   static const Field<SettingsState, DeviceType> _f$deviceType = Field(
     'deviceType',
@@ -171,6 +178,7 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
     #sendMode: _f$sendMode,
     #saveWindowPlacement: _f$saveWindowPlacement,
     #enableAnimations: _f$enableAnimations,
+    #checkForUpdates: _f$checkForUpdates,
     #deviceType: _f$deviceType,
     #deviceModel: _f$deviceModel,
     #shareViaLinkAutoAccept: _f$shareViaLinkAutoAccept,
@@ -201,6 +209,7 @@ class SettingsStateMapper extends ClassMapperBase<SettingsState> {
       sendMode: data.dec(_f$sendMode),
       saveWindowPlacement: data.dec(_f$saveWindowPlacement),
       enableAnimations: data.dec(_f$enableAnimations),
+      checkForUpdates: data.dec(_f$checkForUpdates),
       deviceType: data.dec(_f$deviceType),
       deviceModel: data.dec(_f$deviceModel),
       shareViaLinkAutoAccept: data.dec(_f$shareViaLinkAutoAccept),
@@ -297,6 +306,7 @@ abstract class SettingsStateCopyWith<$R, $In extends SettingsState, $Out>
     SendMode? sendMode,
     bool? saveWindowPlacement,
     bool? enableAnimations,
+    bool? checkForUpdates,
     DeviceType? deviceType,
     String? deviceModel,
     bool? shareViaLinkAutoAccept,
@@ -355,6 +365,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
     SendMode? sendMode,
     bool? saveWindowPlacement,
     bool? enableAnimations,
+    bool? checkForUpdates,
     Object? deviceType = $none,
     Object? deviceModel = $none,
     bool? shareViaLinkAutoAccept,
@@ -385,6 +396,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
       if (saveWindowPlacement != null)
         #saveWindowPlacement: saveWindowPlacement,
       if (enableAnimations != null) #enableAnimations: enableAnimations,
+      if (checkForUpdates != null) #checkForUpdates: checkForUpdates,
       if (deviceType != $none) #deviceType: deviceType,
       if (deviceModel != $none) #deviceModel: deviceModel,
       if (shareViaLinkAutoAccept != null)
@@ -422,6 +434,7 @@ class _SettingsStateCopyWithImpl<$R, $Out>
       or: $value.saveWindowPlacement,
     ),
     enableAnimations: data.get(#enableAnimations, or: $value.enableAnimations),
+    checkForUpdates: data.get(#checkForUpdates, or: $value.checkForUpdates),
     deviceType: data.get(#deviceType, or: $value.deviceType),
     deviceModel: data.get(#deviceModel, or: $value.deviceModel),
     shareViaLinkAutoAccept: data.get(

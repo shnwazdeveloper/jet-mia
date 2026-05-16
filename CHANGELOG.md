@@ -1,1 +1,11 @@
-app/assets/CHANGELOG.md
+# Jet Mia Changelog
+
+## 1.17.1+59 (2026-05-16)
+
+- Updated the visible app screens to use Jet Mia branding.
+- Updated About, Settings, Donate, Privacy Policy, homepage, and source links for SHNWAZX/jet-mia.
+- Replaced upstream donation buttons with Jet Mia support links.
+- Fixed the Windows GitHub artifact so users download the full ZIP bundle with plugin DLLs, including connectivity_plus_plugin.dll.
+- Kept Android APK builds published as the Jet Mia APK artifact.
+- Fixed stale file-transfer sessions where Windows stayed queued and Android showed "recipient busy" after a failed upload.
+- Added optional update notifications with an "Update now" action that opens the latest GitHub release.

@@ -264,7 +264,7 @@
     "title": "About Jet Mia",
     "description": [
       "Jet Mia is a free, open-source app that allows you to securely share files and messages with nearby devices over your local network without needing an internet connection.",
-      "This app is available on Android, iOS, macOS, Windows and Linux. You can find all download options on the official homepage."
+      "This app is available on Android, iOS, macOS, Windows and Linux. You can find downloads and source code on the Jet Mia GitHub repository."
     ],
     "author": "Author",
     "contributors": "Contributors",
@@ -273,7 +273,7 @@
   },
   "donationPage": {
     "title": "Donate",
-    "info": "Jet Mia is free, open-source and without any ads. If you like the app, you can support the development with a donation.",
+    "info": "Jet Mia is free, open-source and without ads. You can support SHNWAZX by visiting the project links.",
     "donate": "Donate {amount}",
     "thanks": "Thank you very much!",
     "restore": "Restore purchase"

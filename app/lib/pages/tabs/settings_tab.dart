@@ -5,6 +5,7 @@ import 'package:common/constants.dart';
 import 'package:common/model/device.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:localsend_app/config/app_info.dart';
 import 'package:localsend_app/config/theme.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/model/persistence/color_mode.dart';
@@ -145,6 +146,13 @@ class SettingsTab extends StatelessWidget {
                         value: vm.settings.enableAnimations,
                         onChanged: (b) async {
                           await ref.notifier(settingsProvider).setEnableAnimations(b);
+                        },
+                      ),
+                      _BooleanEntry(
+                        label: 'Update notifications',
+                        value: vm.settings.checkForUpdates,
+                        onChanged: (b) async {
+                          await ref.notifier(settingsProvider).setCheckForUpdates(b);
                         },
                       ),
                     ],
@@ -511,7 +519,7 @@ class SettingsTab extends StatelessWidget {
                         buttonLabel: t.general.open,
                         onTap: () async {
                           await launchUrl(
-                            Uri.parse('https://localsend.org/privacy'),
+                            Uri.parse(appPrivacyPolicyUrl),
                             mode: LaunchMode.externalApplication,
                           );
                         },
@@ -557,7 +565,7 @@ class SettingsTab extends StatelessWidget {
                         orElse: () => Container(),
                       ),
                   Text(
-                    '© ${DateTime.now().year} Tien Do Nam',
+                    'Copyright ${DateTime.now().year} $appCopyrightHolder',
                     textAlign: TextAlign.center,
                   ),
                   Center(

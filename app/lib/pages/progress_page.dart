@@ -157,7 +157,10 @@ class _ProgressPageState extends State<ProgressPage> with Refena {
           ref.notifier(serverProvider).closeSession();
         }
       } else if (sendState != null) {
-        if (sendState.status == SessionStatus.sending) {
+        final shouldCancelRemote =
+            sendState.status == SessionStatus.sending ||
+            (sendState.status == SessionStatus.finishedWithErrors && sendState.remoteSessionId != null);
+        if (shouldCancelRemote) {
           ref.notifier(sendProvider).cancelSession(widget.sessionId);
         } else {
           ref.notifier(sendProvider).closeSession(widget.sessionId);

@@ -10,9 +10,10 @@ import 'package:common/model/dto/multicast_dto.dart';
 import 'package:common/util/logger.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:localsend_app/config/app_info.dart';
 import 'package:localsend_app/config/refena.dart';
 import 'package:localsend_app/config/theme.dart';
 import 'package:localsend_app/pages/home_page.dart';
@@ -46,12 +47,14 @@ import 'package:localsend_app/util/native/macos_channel.dart';
 import 'package:localsend_app/util/native/platform_check.dart';
 import 'package:localsend_app/util/native/tray_helper.dart';
 import 'package:localsend_app/util/rhttp.dart';
+import 'package:localsend_app/util/update_checker.dart';
 import 'package:localsend_app/util/ui/dynamic_colors.dart';
 import 'package:localsend_app/util/ui/snackbar.dart';
 import 'package:logging/logging.dart';
 import 'package:refena_flutter/refena_flutter.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:share_handler/share_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 final _logger = Logger('Init');
@@ -291,12 +294,42 @@ Future<void> postInit(BuildContext context, Ref ref, bool appStart) async {
     ref.global.dispatchAsync(ClearCacheAction()); // ignore: unawaited_futures
   }
 
+  if (appStart && ref.read(settingsProvider).checkForUpdates) {
+    unawaited(_showUpdateAvailableNotification(context));
+  }
+
   // [FOSS_REMOVE_START]
   if (checkPlatformSupportPayment()) {
     // ignore: unawaited_futures
     ref.redux(purchaseProvider).dispatchAsync(InitPurchaseStream());
   }
   // [FOSS_REMOVE_END]
+}
+
+Future<void> _showUpdateAvailableNotification(BuildContext context) async {
+  final update = await checkForUpdate();
+  if (update == null || !context.mounted) {
+    return;
+  }
+
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  if (messenger == null) {
+    return;
+  }
+
+  messenger.removeCurrentSnackBar();
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text('$appDisplayName ${update.version} is available.'),
+      duration: const Duration(seconds: 12),
+      action: SnackBarAction(
+        label: 'Update now',
+        onPressed: () {
+          unawaited(launchUrl(update.url, mode: LaunchMode.externalApplication));
+        },
+      ),
+    ),
+  );
 }
 
 class _HandleShareIntentAction extends AsyncGlobalAction {

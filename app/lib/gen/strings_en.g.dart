@@ -539,7 +539,7 @@ class TranslationsAboutPageEn {
 
   List<String> get description => [
     'Jet Mia is a free, open-source app that allows you to securely share files and messages with nearby devices over your local network without needing an internet connection.',
-    'This app is available on Android, iOS, macOS, Windows and Linux. You can find all download options on the official homepage.',
+    'This app is available on Android, iOS, macOS, Windows and Linux. You can find downloads and source code on the Jet Mia GitHub repository.',
   ];
 
   /// en: 'Author'
@@ -566,8 +566,8 @@ class TranslationsDonationPageEn {
   /// en: 'Donate'
   String get title => 'Donate';
 
-  /// en: 'Jet Mia is free, open-source and without any ads. If you like the app, you can support the development with a donation.'
-  String get info => 'Jet Mia is free, open-source and without any ads. If you like the app, you can support the development with a donation.';
+  /// en: 'Jet Mia is free, open-source and without ads. You can support SHNWAZX by visiting the project links.'
+  String get info => 'Jet Mia is free, open-source and without ads. You can support SHNWAZX by visiting the project links.';
 
   /// en: 'Donate {amount}'
   String donate({required Object amount}) => 'Donate ${amount}';

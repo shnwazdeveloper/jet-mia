@@ -55,10 +55,12 @@ import 'package:window_manager/window_manager.dart';
 const _uuid = Uuid();
 
 final _logger = Logger('ReceiveController');
+const _pendingUploadTimeout = Duration(minutes: 1);
 
 /// Handles all requests for receiving files.
 class ReceiveController {
   final ServerUtils server;
+  final Map<String, DateTime> _acceptedUploadSessions = {};
 
   ReceiveController(this.server);
 
@@ -192,6 +194,8 @@ class ReceiveController {
     required bool https,
     required bool v2,
   }) async {
+    _closeStalePendingUploadSession();
+
     if (server.getState().session != null) {
       // block incoming requests when we are already in a session
       return await request.respondJson(409, message: 'Blocked by another session');
@@ -391,6 +395,7 @@ class ReceiveController {
         );
       },
     );
+    _trackAcceptedUploadSession(sessionId);
 
     if (quickSave) {
       // ignore: use_build_context_synchronously, unawaited_futures
@@ -480,6 +485,7 @@ class ReceiveController {
     }
 
     // begin of actual file transfer
+    _acceptedUploadSessions.remove(receiveState.sessionId);
     server.setState(
       (oldState) => oldState?.copyWith(
         session: receiveState.copyWith(
@@ -668,6 +674,7 @@ class ReceiveController {
       }
 
       _cancelBySender(server);
+      _acceptedUploadSessions.remove(receiveSession.sessionId);
       return await request.respondJson(200);
     } else {
       // We are not receiving files so we may be sending files.
@@ -827,12 +834,56 @@ class ReceiveController {
       return;
     }
 
+    _acceptedUploadSessions.remove(sessionId);
     server.setState(
       (oldState) => oldState?.copyWith(
         session: null,
       ),
     );
     server.ref.notifier(progressProvider).removeSession(sessionId);
+  }
+
+  void _trackAcceptedUploadSession(String sessionId) {
+    _acceptedUploadSessions[sessionId] = DateTime.now();
+
+    Future.delayed(_pendingUploadTimeout, () {
+      final session = server.getStateOrNull()?.session;
+      if (session?.sessionId != sessionId) {
+        _acceptedUploadSessions.remove(sessionId);
+        return;
+      }
+
+      if (_isPendingUploadStart(session!)) {
+        _logger.warning('Closing stale receive session $sessionId because no upload started.');
+        closeSession();
+        return;
+      }
+
+      _acceptedUploadSessions.remove(sessionId);
+    });
+  }
+
+  void _closeStalePendingUploadSession() {
+    final session = server.getStateOrNull()?.session;
+    if (session == null || !_isPendingUploadStart(session)) {
+      return;
+    }
+
+    _logger.warning('Closing stale receive session ${session.sessionId} before accepting a new request.');
+    closeSession();
+  }
+
+  bool _isPendingUploadStart(ReceiveSessionState session) {
+    final acceptedAt = _acceptedUploadSessions[session.sessionId];
+    if (acceptedAt == null || DateTime.now().difference(acceptedAt) < _pendingUploadTimeout) {
+      return false;
+    }
+
+    return session.status == SessionStatus.sending &&
+        session.startTime == null &&
+        session.responseHandler == null &&
+        session.files.values.any((file) => file.token != null) &&
+        session.files.values.every((file) => file.status == FileStatus.queue || file.status == FileStatus.skipped);
   }
 }
 

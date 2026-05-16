@@ -446,7 +446,7 @@ class _TranslationsAboutPageEnIn extends TranslationsAboutPageEn {
   @override
   List<String> get description => [
     'Jet Mia is a free, open-source app that allows you to securely share files and messages with nearby devices over your local network without needing an internet connection.',
-    'This app is available on Android, iOS, macOS, Windows and Linux. You can find all download options on the official homepage.',
+    'This app is available on Android, iOS, macOS, Windows and Linux. You can find downloads and source code on the Jet Mia GitHub repository.',
   ];
   @override
   String get author => 'Author';
@@ -468,7 +468,7 @@ class _TranslationsDonationPageEnIn extends TranslationsDonationPageEn {
   @override
   String get title => 'Donate';
   @override
-  String get info => 'Jet Mia is free, open-source and without any ads. If you like the app, you can support the development with a donation.';
+  String get info => 'Jet Mia is free, open-source and without ads. You can support SHNWAZX by visiting the project links.';
   @override
   String donate({required Object amount}) => 'Donate ${amount}';
   @override

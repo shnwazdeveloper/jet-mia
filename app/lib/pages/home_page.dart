@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:localsend_app/config/app_info.dart';
 import 'package:localsend_app/config/init.dart';
 import 'package:localsend_app/config/theme.dart';
 import 'package:localsend_app/gen/strings.g.dart';
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> with Refena {
                                         SizedBox(height: 40)
                                       : SizedBox(height: 20),
                                   const Text(
-                                    'LocalSend',
+                                    appDisplayName,
                                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),

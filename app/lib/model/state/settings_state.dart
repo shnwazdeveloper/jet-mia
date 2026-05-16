@@ -30,6 +30,8 @@ class SettingsState with SettingsStateMappable {
   final SendMode sendMode;
   final bool saveWindowPlacement;
   final bool enableAnimations;
+  @MappableField(defaultValue: true)
+  final bool checkForUpdates;
   final DeviceType? deviceType;
   final String? deviceModel;
   final bool shareViaLinkAutoAccept;
@@ -58,6 +60,7 @@ class SettingsState with SettingsStateMappable {
     required this.sendMode,
     required this.saveWindowPlacement,
     required this.enableAnimations,
+    required this.checkForUpdates,
     required this.deviceType,
     required this.deviceModel,
     required this.shareViaLinkAutoAccept,

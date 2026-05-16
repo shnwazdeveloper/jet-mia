@@ -33,7 +33,7 @@ final _logger = Logger('PersistenceService');
 
 String get _windowsFile {
   final appData = Platform.environment['APPDATA'];
-  return '$appData\\LocalSend\\settings.json';
+  return '$appData\\Jet Mia\\settings.json';
 }
 
 String get _windowsLegacyFile {
@@ -86,6 +86,7 @@ const _minimizeToTray = 'ls_minimize_to_tray';
 const _https = 'ls_https';
 const _sendMode = 'ls_send_mode';
 const _enableAnimations = 'ls_enable_animations';
+const _checkForUpdates = 'jm_check_for_updates';
 const _deviceType = 'ls_device_type';
 const _deviceModel = 'ls_device_model';
 const _shareViaLinkAutoAccept = 'ls_share_via_link_auto_accept';
@@ -528,6 +529,14 @@ class PersistenceService {
 
   bool getEnableAnimations() {
     return _prefs.getBool(_enableAnimations) ?? true;
+  }
+
+  Future<void> setCheckForUpdates(bool checkForUpdates) async {
+    await _prefs.setBool(_checkForUpdates, checkForUpdates);
+  }
+
+  bool getCheckForUpdates() {
+    return _prefs.getBool(_checkForUpdates) ?? true;
   }
 
   DeviceType? getDeviceType() {

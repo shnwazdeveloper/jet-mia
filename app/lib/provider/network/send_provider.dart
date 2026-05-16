@@ -519,25 +519,10 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
       return;
     }
 
-    // notify the receiver
-    final target = sessionState.target;
-    try {
-      ref
-          .read(httpProvider)
-          .v2
-          // ignore: discarded_futures
-          .cancel(
-            protocol: target.getProtocolType(),
-            ip: target.ip!,
-            port: target.port,
-            sessionId: remoteSessionId,
-          );
-    } catch (e) {
-      _logger.warning('Error while canceling session', e);
-    }
+    _notifyReceiverCanceled(sessionState);
 
     // finally, close session locally
-    closeSession(sessionId);
+    _closeSessionLocally(sessionId, sessionState);
   }
 
   void cancelSessionByReceiver(String sessionId) {
@@ -575,10 +560,42 @@ class SendNotifier extends Notifier<Map<String, SendSessionState>> {
     if (sessionState == null) {
       return;
     }
+
+    if (sessionState.status == SessionStatus.finishedWithErrors && sessionState.remoteSessionId != null) {
+      _notifyReceiverCanceled(sessionState);
+    }
+
+    _closeSessionLocally(sessionId, sessionState);
+  }
+
+  void _closeSessionLocally(String sessionId, SendSessionState sessionState) {
     state = state.removeSession(ref, sessionId);
     if (sessionState.status == SessionStatus.finished && ref.read(settingsProvider).sendMode == SendMode.single) {
       // clear selected files
       ref.redux(selectedSendingFilesProvider).dispatch(ClearSelectionAction());
+    }
+  }
+
+  void _notifyReceiverCanceled(SendSessionState sessionState) {
+    final remoteSessionId = sessionState.remoteSessionId;
+    if (remoteSessionId == null) {
+      return;
+    }
+
+    final target = sessionState.target;
+    try {
+      ref
+          .read(httpProvider)
+          .v2
+          // ignore: discarded_futures
+          .cancel(
+            protocol: target.getProtocolType(),
+            ip: target.ip!,
+            port: target.port,
+            sessionId: remoteSessionId,
+          );
+    } catch (e) {
+      _logger.warning('Error while canceling session', e);
     }
   }
 
