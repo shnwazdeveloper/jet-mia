@@ -30,7 +30,6 @@ class SettingsState with SettingsStateMappable {
   final SendMode sendMode;
   final bool saveWindowPlacement;
   final bool enableAnimations;
-  @MappableField(defaultValue: true)
   final bool checkForUpdates;
   final DeviceType? deviceType;
   final String? deviceModel;
