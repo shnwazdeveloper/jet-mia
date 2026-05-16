@@ -9,3 +9,5 @@
 - Kept Android APK builds published as the Jet Mia APK artifact.
 - Fixed stale file-transfer sessions where Windows stayed queued and Android showed "recipient busy" after a failed upload.
 - Added optional update notifications with an "Update now" action that opens the latest GitHub release.
+- Renamed release downloads to `jet_mia.apk` and `jet_mia_windows_x64.zip`.
+- Cleaned the Windows ZIP so it only contains the portable runtime bundle and no shortcut or developer files.

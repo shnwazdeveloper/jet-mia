@@ -12,10 +12,11 @@ Jet Mia is an open-source local file sharing app. It lets nearby devices share f
 
 GitHub Actions builds the Android APK and Windows ZIP from the `main` branch.
 
-- Android: download the `jet-mia-apk` artifact and install `jet-mia.apk`.
-- Windows: download `jet-mia-windows-x64.zip`, extract the whole ZIP, then run `jet_mia.exe` from the extracted folder.
+- Android: download `jet_mia.apk`.
+- Windows: download `jet_mia_windows_x64.zip`, extract the whole ZIP, then run `jet_mia.exe` from the extracted folder.
 
 Do not run a copied standalone `jet_mia.exe` by itself on Windows. Flutter desktop apps need the DLL files next to the EXE, including `connectivity_plus_plugin.dll`.
+The Windows ZIP is portable and does not include `.lnk` shortcut files.
 
 ## Building
 

@@ -51,13 +51,13 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p artifacts
-          cp app/build/app/outputs/flutter-apk/app-release.apk artifacts/jet-mia.apk
+          cp app/build/app/outputs/flutter-apk/app-release.apk artifacts/jet_mia.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: jet-mia-apk
-          path: artifacts/jet-mia.apk
+          name: jet_mia_apk
+          path: artifacts/jet_mia.apk
           if-no-files-found: error
 
   windows-exe:
@@ -93,15 +93,34 @@ jobs:
       - name: Package Windows build
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          if (!(Test-Path app/build/windows/x64/runner/Release/connectivity_plus_plugin.dll)) {
+          $releaseDir = "app/build/windows/x64/runner/Release"
+          $packageDir = "artifacts/jet_mia_windows_x64"
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+
+          if (!(Test-Path "$releaseDir/jet_mia.exe")) {
+            throw "Windows bundle is missing jet_mia.exe"
+          }
+          if (!(Test-Path "$releaseDir/connectivity_plus_plugin.dll")) {
             throw "Windows bundle is missing connectivity_plus_plugin.dll"
           }
-          Compress-Archive -Path app/build/windows/x64/runner/Release/* -DestinationPath artifacts/jet-mia-windows-x64.zip -Force
+
+          Copy-Item "$releaseDir/jet_mia.exe" $packageDir
+          Copy-Item "$releaseDir/*.dll" $packageDir
+          Copy-Item "$releaseDir/data" $packageDir -Recurse
+
+          $blockedExtensions = @("*.lnk", "*.lib", "*.exp", "*.pdb")
+          foreach ($pattern in $blockedExtensions) {
+            $blockedFiles = Get-ChildItem $packageDir -Recurse -File -Filter $pattern
+            if ($blockedFiles) {
+              throw "Windows ZIP contains unsupported file type: $($blockedFiles[0].FullName)"
+            }
+          }
+
+          Compress-Archive -Path "$packageDir/*" -DestinationPath artifacts/jet_mia_windows_x64.zip -Force
 
       - name: Upload Windows build
         uses: actions/upload-artifact@v4
         with:
-          name: jet-mia-windows-x64
-          path: artifacts/jet-mia-windows-x64.zip
+          name: jet_mia_windows_x64
+          path: artifacts/jet_mia_windows_x64.zip
           if-no-files-found: error
