@@ -56,6 +56,8 @@ add_subdirectory("runner")
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+target_link_libraries(${BINARY_NAME} PRIVATE runtimeobject.lib)
+
 if(TARGET gal_plugin)
   target_link_libraries(gal_plugin PRIVATE runtimeobject.lib)
 endif()
