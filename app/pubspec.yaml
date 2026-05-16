@@ -3,7 +3,7 @@ description: Jet Mia is an open source cross-platform file sharing app.
 homepage: https://github.com/SHNWAZX/jet-mia
 publish_to: "none"
 
-version: 1.17.1+59
+version: 1.17.2+60
 
 environment:
   flutter: ^3.25.0

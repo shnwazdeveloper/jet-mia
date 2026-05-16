@@ -1,5 +1,11 @@
 # Jet Mia Changelog
 
+## 1.17.2+60 (2026-05-16)
+
+- Fixed Windows and Android file transfers failing after the receiver accepted the request.
+- Published Windows as a single `jet_mia_windows_x64.exe` installer instead of a ZIP file.
+- Kept the installer clean by bundling only the Jet Mia runtime files needed to run the app.
+
 ## 1.17.1+59 (2026-05-16)
 
 - Updated the visible app screens to use Jet Mia branding.

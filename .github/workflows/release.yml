@@ -331,7 +331,7 @@ jobs:
           name: appimage-x86-64-result
           path: ./*.AppImage
 
-  build_windows_zip_x86_64:
+  build_windows_exe_x86_64:
     needs: build
     runs-on: windows-latest
 
@@ -347,34 +347,17 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: "stable"
 
-      - name: Dependencies
-        working-directory: app
-        run: flutter pub get
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
 
-      - name: Compile for Windows
-        working-directory: app
-        run: flutter build windows
+      - name: Compile Windows installer
+        run: .\scripts\compile_windows_exe.ps1
 
-      - name: Create empty settings.json
-        working-directory: app
-        run: echo {} > build/windows/x64/runner/Release/settings.json
-
-      - name: Add DLL files
-        working-directory: app
-        run: |
-          Copy-Item ../scripts/windows/x64/msvcp140.dll build/windows/x64/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140.dll build/windows/x64/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140_1.dll build/windows/x64/runner/Release/
-
-      - name: Zip compiled files
-        working-directory: app
-        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath LocalSend.zip
-
-      - name: Upload zip
-        uses: actions/upload-artifact@v6
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
         with:
-          name: windows-zip-x86-64-result
-          path: app/LocalSend.zip
+          name: windows-exe-x86-64-result
+          path: artifacts/jet_mia_windows_x64.exe
 
   release:
     needs:
@@ -385,7 +368,7 @@ jobs:
       - build_deb_x86_64
       - build_deb_arm_64
       - build_appimage_x86_64
-      - build_windows_zip_x86_64
+      - build_windows_exe_x86_64
     runs-on: ubuntu-24.04
 
     steps:
@@ -554,15 +537,15 @@ jobs:
           asset_name: LocalSend-${{ needs.build.outputs.version }}-linux-x86-64.AppImage
           asset_content_type: application/x-appimage
 
-      # WINDOWS ZIP (x86_64)
-      - name: Download windows zip file
-        uses: actions/download-artifact@v7
+      # WINDOWS EXE (x86_64)
+      - name: Download windows exe file
+        uses: actions/download-artifact@v4
         with:
-          name: windows-zip-x86-64-result
-          path: windows-zip-x86-64-result
+          name: windows-exe-x86-64-result
+          path: windows-exe-x86-64-result
 
-      - name: Copy zip file to root
-        run: cp windows-zip-x86-64-result/*.zip result.zip
+      - name: Copy exe file to root
+        run: cp windows-exe-x86-64-result/*.exe result.exe
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -570,6 +553,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.draft_release.outputs.upload_url }}
-          asset_path: result.zip
-          asset_name: LocalSend-${{ needs.build.outputs.version }}-windows-x86-64.zip
-          asset_content_type: application/zip
+          asset_path: result.exe
+          asset_name: jet_mia_windows_x64.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
