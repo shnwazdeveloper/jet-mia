@@ -16,7 +16,7 @@ hyper-util = { version = "0.1.19", features = ["server"], optional = true }
 lru = "0.16.3"
 pem = { version = "3.0.6", optional = true }
 reqwest = { version = "0.13.1", features = ["charset", "http2", "system-proxy", "json", "rustls-no-provider", "stream", "webpki-roots"], default-features = false, optional = true }
-rand = "0.9.1"
+rand = "0.9.3"
 rsa = { version = "0.9.8", optional = true }
 rustls = { version = "0.23.32", default-features = false, features = ["ring", "tls12", "std"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
